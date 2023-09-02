@@ -85,7 +85,7 @@ const cardsData = [
   },
 ];
 
-const game = { goal: 6, reward:1000, correct: 0, score:0 };
+const game = { goal: 6, reward:1000, correct: 0, score:0, tries:0 };
 
 let selectedCards = [];
 
@@ -104,6 +104,7 @@ function createCard(cardData) {
       card.classList.add("selected");
       const img = card.querySelector(".card-img-top");
       img.src = "img/oso.png"; // Cambiar la imagen al hacer clic
+
       if (selectedCards.length === 2) {
         checkMatch();
       }
@@ -132,9 +133,6 @@ function createCard(cardData) {
 }
 
 function checkMatch() {
-  const scoreCounter = document.getElementById("score-counter");
-  console.log(selectedCards);
-
   if (selectedCards[0].dataId === selectedCards[1].dataId) {
     // Desactivar las tarjetas que forman el par
     selectedCards.forEach((cardData) => {
@@ -156,8 +154,6 @@ function checkMatch() {
         game.correct += 1;
         game.score += game.reward
         console.log(game.score);
-        scoreCounter.textContent = `Puntuación: ${game.score}`;
-
       }
       selectedCards = [];
     }, 100); // Esperar 2 segundos antes de limpiar las tarjetas
@@ -179,10 +175,41 @@ function checkMatch() {
       });
       selectedCards = [];
     }, 200);
+      
   }
+  const scoreCounter = document.getElementById("score-counter");
+  game.tries += 1;
+  scoreCounter.textContent = `Intentos: ${game.tries} | Puntuación: ${game.score}`;
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Verificación del local storage
+    const playerName = localStorage.getItem("name");
+
+    // Si el nombre no está en el almacenamiento local, mostrar el modal
+    if (!playerName) {
+      $("#nameModal").modal("show");
+    }else{
+        const nameContainer = document.getElementById("name-container");
+        nameContainer.textContent = `Jugador: ${playerName}`;
+    }
+  
+    // Capturar el formulario para guardar el nombre
+    const nameForm = document.getElementById("nameForm");
+    const nameInput = document.getElementById("nameInput");
+  
+    // Escuchar el evento de envío del formulario
+    nameForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = nameInput.value;
+  
+      // Guardar el nombre en el almacenamiento local
+      localStorage.setItem("name", name);
+  
+      // Cerrar el modal
+      $("#nameModal").modal("hide");
+    });   
+    // Lógica de renderizado
   const cardContainer = document.getElementById("card-container");
   cardsData.forEach((cardData, index) => {
     const cardCol = createCard(cardData);

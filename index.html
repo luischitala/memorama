@@ -16,6 +16,13 @@
     <script src="js/main.js"></script>
   </head>
   <body>
+    <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12 text-right">
+            <div id="name-container" class="m-3">Jugador: Anónimo</div>
+          </div>
+          
+      </div>
     <div class="container mt-2">
       <div class="row mb-5">
         <div class="col-md-12">
@@ -29,12 +36,38 @@
           <div id="time-counter" class="ml-5">Tiempo: 0 segundos</div>
         </div>
         <div class="col-md-6 text-right ">
-          <div id="score-counter" class="mr-5">Puntuación: 0</div>
+          <div id="score-counter" class="mr-5">Intentos: 0 Puntuación: 0</div>
         </div>
       </div>
     </div>
     <div class="container mt-2">
       <div class="row memo-row" id="card-container"></div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="nameModal" tabindex="-1" role="dialog" aria-labelledby="nameModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="nameModalLabel">Ingresa tu nombre</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="nameForm">
+                <div class="form-group">
+                  <label for="nameInput">Nombre:</label>
+                  <input type="text" class="form-control" id="nameInput" required>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+              <button type="submit" form="nameForm" class="btn btn-primary">Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!-- Modal -->
   </body>
 </html>
