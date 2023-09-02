@@ -177,9 +177,12 @@ function checkMatch() {
     }, 200);
       
   }
-  const scoreCounter = document.getElementById("score-counter");
-  game.tries += 1;
-  scoreCounter.textContent = `Intentos: ${game.tries} | Puntuación: ${game.score}`;
+  setTimeout(() => {
+    const scoreCounter = document.getElementById("score-counter");
+    game.tries += 1;
+    scoreCounter.textContent = `Intentos: ${game.tries} | Puntuación: ${game.score}`;
+  },100)
+
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -208,6 +211,8 @@ document.addEventListener("DOMContentLoaded", function () {
   
       // Cerrar el modal
       $("#nameModal").modal("hide");
+      const nameContainer = document.getElementById("name-container");
+      nameContainer.textContent = `Jugador: ${name}`;
     });   
     // Lógica de renderizado
   const cardContainer = document.getElementById("card-container");
