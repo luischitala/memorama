@@ -1,0 +1,25 @@
+.memo-card {
+    height: 180px;
+    width: 150px;
+}
+
+.memo-row {
+    margin-bottom: 2rem;
+}
+
+.memo-card {
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.memo-card.active:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    filter: brightness(1.2);
+}
+
+.memo-card.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
