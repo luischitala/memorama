@@ -1,90 +1,31 @@
-const cardsData = [
-  {
-    imgSrc: "img/cover.png",
-    id: "1",
-    dataId: "1",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "2",
-    dataId: "1",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "3",
-    dataId: "2",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "4",
-    dataId: "2",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "5",
-    dataId: "3",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "6",
-    dataId: "3",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "7",
-    dataId: "4",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "8",
-    dataId: "4",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "9",
-    dataId: "5",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "10",
-    dataId: "5",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "11",
-    dataId: "6",
-    selected: false,
-    disabled: false,
-  },
-  {
-    imgSrc: "img/cover.png",
-    id: "12",
-    dataId: "6",
-    selected: false,
-    disabled: false,
-  },
-];
+// Función para generar aleatoriamente un array de IDs del 1 al 6 (dos veces cada uno)
+function generarIDsAleatorios() {
+  const ids = [1, 2, 3, 4, 5, 6];
+  const idsDuplicados = [...ids, ...ids]; // Duplicar los IDs
+  const idsAleatorios = [];
 
+  while (idsDuplicados.length > 0) {
+    const indiceAleatorio = Math.floor(Math.random() * idsDuplicados.length);
+    const idAleatorio = idsDuplicados.splice(indiceAleatorio, 1)[0];
+    idsAleatorios.push(idAleatorio);
+  }
+
+  return idsAleatorios;
+}
+
+// Añadir tips sobre información del par aprendido
+// Gato siames precio 
+
+
+// Generar los IDs aleatorios y crear el array de cardsData
+const idsAleatorios = generarIDsAleatorios();
+const cardsData = idsAleatorios.map((id, index) => ({
+  imgSrc: `img/1/${id}.jpg`,
+  id: (index + 1).toString(),
+  dataId: id.toString(),
+  selected: false,
+  disabled: false,
+}));
 const game = { goal: 6, reward:1000, correct: 0, score:0, tries:0 };
 
 let selectedCards = [];
@@ -103,7 +44,7 @@ function createCard(cardData) {
       console.log(selectedCards);
       card.classList.add("selected");
       const img = card.querySelector(".card-img-top");
-      img.src = "img/oso.png"; // Cambiar la imagen al hacer clic
+      img.src = cardData.imgSrc; // Cambiar la imagen al hacer clic
 
       if (selectedCards.length === 2) {
         checkMatch();
@@ -113,7 +54,7 @@ function createCard(cardData) {
       cardData.selected = false;
       card.classList.remove("selected");
       const img = card.querySelector(".card-img-top");
-      img.src = "img/cover.png"; // Volver a la imagen de cubierta
+      img.src = cardData.imgSrc; // Volver a la imagen de cubierta
       selectedCards = selectedCards.filter(
         (selectedCard) => selectedCard !== cardData
       );
@@ -121,7 +62,7 @@ function createCard(cardData) {
   };
 
   const img = document.createElement("img");
-  img.src = cardData.imgSrc;
+  img.src = 'img/cover.png';
   img.id = cardData.id;
   img.dataset.img = cardData.dataId;
   img.classList.add("card-img-top");
@@ -141,6 +82,8 @@ function checkMatch() {
 
     // Limpiar las tarjetas seleccionadas después de un tiempo
     setTimeout(() => {
+      const timeCounter = document.getElementById("time-counter");
+
       selectedCards.forEach((cardData) => {
         cardData.disabled = true;
         const cardElement = document.querySelector(`[id="${cardData.id}"]`);
@@ -150,6 +93,35 @@ function checkMatch() {
       });
       if (game.goal - 1 == game.correct) {
         alert("Felicidades ganaste");
+        const postData = {
+          jugador: localStorage.getItem("name"), // Reemplaza con el nombre del jugador
+          puntuacion: game.score, // La puntuación que deseas enviar
+          tiempo_juego:timeCounter.textContent, // El tiempo de juego
+          intentos: game.tries, // La cantidad de intentos
+        };
+      
+        // Realiza la solicitud POST
+        fetch('http://localhost:3000/puntuaciones', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(postData),
+        })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Error al enviar la puntuación');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log('Puntuación enviada con éxito:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+        localStorage.removeItem("name");
+        location.reload();
       } else {
         game.correct += 1;
         game.score += game.reward
@@ -160,12 +132,14 @@ function checkMatch() {
   } else {
     console.log(selectedCards);
     // No coinciden las tarjetas
-    selectedCards.forEach((cardData) => {
-      cardData.selected = false;
-      const cardElement = document.querySelector(`[id="${cardData.id}"]`);
-      cardElement.classList.remove("selected");
-      cardElement.src = "img/oso.png"; // Mostrar la última imagen durante un breve tiempo
-    });
+      setTimeout(() => {
+        selectedCards.forEach((cardData) => {
+          cardData.selected = false;
+          const cardElement = document.querySelector(`[id="${cardData.id}"]`);
+          cardElement.classList.remove("selected");
+        });
+      }, 100);
+      
 
     // Cubrir las tarjetas después de un breve tiempo y limpiar las tarjetas seleccionadas
     setTimeout(() => {
@@ -229,9 +203,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
   let seconds = 0;
-  const timeCounter = document.getElementById("time-counter");
+  
 
   function updateTimer() {
+    const timeCounter = document.getElementById("time-counter");
     seconds++;
     let displayTime;
     if (seconds < 60) {
@@ -251,3 +226,4 @@ document.addEventListener("DOMContentLoaded", function () {
   // Iniciar el contador de tiempo
   const timerInterval = setInterval(updateTimer, 1000);
 });
+
